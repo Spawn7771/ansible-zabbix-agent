@@ -36,18 +36,18 @@
     - config
     - service
 
-- name: "Install local python-netaddr package"
-  pip:
-    name: netaddr
-    state: present
-  register: zabbix_python_netaddr_package_installed
-  until: zabbix_python_netaddr_package_installed is succeeded
-  delegate_to: localhost
-  run_once: True
-  become: "{{ zabbix_agent_become_on_localhost }}"
-  when:
-    - zabbix_install_pip_packages | bool
-    - ansible_all_ipv4_addresses is defined or (zabbix_agent_ip is not defined and total_private_ip_addresses is defined)
+#- name: "Install local python-netaddr package"
+#  pip:
+#    name: netaddr
+#    state: present
+#  register: zabbix_python_netaddr_package_installed
+#  until: zabbix_python_netaddr_package_installed is succeeded
+#  delegate_to: localhost
+#  run_once: True
+#  become: "{{ zabbix_agent_become_on_localhost }}"
+#  when:
+#    - zabbix_install_pip_packages | bool
+#    - ansible_all_ipv4_addresses is defined or (zabbix_agent_ip is not defined and total_private_ip_addresses is defined)
 
 - name: "Encrypt with TLS PSK auto management"
   include_tasks: tlspsk_auto.yml
@@ -57,19 +57,9 @@
     - (zabbix_agent_tlspsk_secret is undefined) or (zabbix_agent_tlspsk_secret | length == '0')
 
 - name: "Install the correct repository"
-  include_tasks: Windows.yml
-  when:
-    - zabbix_agent_os_family == "Windows"
-
-- name: "Install the correct repository"
   include_tasks: Linux.yml
   when:
     - (zabbix_agent_os_family != "Windows" and zabbix_agent_os_family != "Darwin") or (zabbix_agent_docker | bool)
-
-- name: "Install the correct repository"
-  include_tasks: macOS.yml
-  when:
-    - zabbix_agent_os_family == "Darwin"
 
 - name: "Installing the Zabbix-api package on localhost"
   pip:

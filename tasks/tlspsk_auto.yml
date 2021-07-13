@@ -5,12 +5,6 @@
     zabbix_agent_tlspskidentity_file: "/etc/zabbix/tls_psk_auto.identity"
   when: (zabbix_agent_os_family != "Windows") or (zabbix_agent_docker | bool)
 
-- name: AutoPSK | Set default path variables for Windows
-  set_fact:
-    zabbix_agent_tlspskfile: "{{ zabbix_win_install_dir }}\tls_psk_auto.secret.txt"
-    zabbix_agent_tlspskidentity_file: "{{ zabbix_win_install_dir }}\tls_psk_auto.identity.txt"
-  when: zabbix_agent_os_family == "Windows"
-
 - name: AutoPSK | Check for existing TLS PSK file
   stat:
     path: "{{ zabbix_agent_tlspskfile }}"
@@ -70,8 +64,6 @@
     - zabbix_agent_tlspskidentity is defined
   notify:
     - restart zabbix-agent
-    - restart win zabbix agent
-    - restart mac zabbix agent
 
 - name: AutoPSK | Default tlsaccept and tlsconnect to enforce PSK
   set_fact:
